@@ -1,9 +1,19 @@
 // original tool source from 'babel-plugin-superjson-next'
 
+import Decimal from "decimal.js";
 import * as hoistNonReactStatics from "hoist-non-react-statics";
 import type { GetServerSideProps } from "next";
 import * as React from "react";
 import SuperJSON from "superjson";
+
+SuperJSON.registerCustom<Decimal, string>(
+  {
+    isApplicable: (v): v is Decimal => Decimal.isDecimal(v),
+    serialize: (v) => v.toJSON(),
+    deserialize: (v) => new Decimal(v),
+  },
+  "decimal.js"
+);
 
 export type SuperJSONProps<P> = P & {
   _superjson?: ReturnType<typeof SuperJSON.serialize>["meta"];
